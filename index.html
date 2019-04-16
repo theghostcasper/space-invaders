@@ -79,12 +79,13 @@
       </nav>
     </header>
     <section  class="game-wrapper">
-      <section class="gameSection" @click="shoot()" @mousemove="onMouseMoved">
+      <section class="gameSection"  @click="shoot"  @mousemove="onMouseMoved"> <!-- @touchstart="shoot" @touchmove="onMouseMoved" --> 
         <article class="player" v-if="playNow">
           <img class="play-now_spacer" v-bind:style="{top: mouseY + 'px', left: mouseX + 'px'}"  src="spacer.png">
         </article>
 
         <section v-html="whiteDots"></section>
+        <section v-html="bullets"></section>
       </section>
     </section>
   </section>
@@ -99,7 +100,8 @@
         playNow: this.playNow,
         mouseX: this.mouseX,
         mouseY: this.mouseY,
-        score: this.score
+        score: this.score,
+        bullets: this.bullets
       },
       methods:{
         onMouseMoved,
@@ -132,6 +134,15 @@
       this.mouseY = e.clientY;
     }  
     function shoot(e){
+      this.bullets = '';
+      let x = this.mouseY;
+      for(let i = 0;i<=x;i++){
+        setTimeout(()=>{
+          this.bullets = `<span style="font-size:25px; display:inline-block; color:white; position:absolute; top:${this.mouseY - i}px; left:${this.mouseX + 47}px; ">.</span>`;
+        },i);
+        if((this.mouseY - i) <= 0) break;
+      }
+      
       this.score = this.score == undefined? this.score=1: this.score+=1;
     }
   </script>

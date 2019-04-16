@@ -79,13 +79,13 @@
       </nav>
     </header>
     <section  class="game-wrapper">
-      <section class="gameSection"  @click="shoot"  @mousemove="onMouseMoved"> <!-- @touchstart="shoot" @touchmove="onMouseMoved" --> 
+      <section class="gameSection" @keyup="shoot" @click="shoot"  @mousemove="onMouseMoved"> <!-- @touchstart="shoot" @touchmove="onMouseMoved" --> 
         <article class="player" v-if="playNow">
           <img class="play-now_spacer" v-bind:style="{top: mouseY + 'px', left: mouseX + 'px'}"  src="spacer.png">
         </article>
 
         <section v-html="whiteDots"></section>
-        <section v-html="bullets"></section>
+        <section class="bullets" v-html="bullets"></section>
       </section>
     </section>
   </section>
@@ -107,7 +107,23 @@
         onMouseMoved,
         shoot
       },
-      mounted: function(){this.$nextTick(() => this.randomSpaceDots())}
+      mounted: function(){
+        this.$nextTick(() => this.randomSpaceDots());
+        window.addEventListener('keydown', (e) => {
+          console.log(e.keyCode)
+          if(e.keyCode == 39)
+            this.mouseX += 40;
+          else if(e.keyCode == 37)
+            this.mouseX -= 40; 
+          else if(e.keyCode == 40)
+            this.mouseY +=40;
+          else if(e.keyCode == 38)
+            this.mouseY -=40;
+          else
+          this.shoot(); // declared in your component methods 
+        });
+
+      }
     });
     app.randomSpaceDots = function randomDots(){
         let width = window.innerWidth; //get window width
@@ -135,12 +151,14 @@
     }  
     function shoot(e){
       this.bullets = '';
-      let x = this.mouseY;
-      for(let i = 0;i<=x;i++){
+      let x = this.mouseX;
+      let y = this.mouseY;
+      for(let i = 0;i<=y;i+=50){
         setTimeout(()=>{
-          this.bullets = `<span style="font-size:25px; display:inline-block; color:white; position:absolute; top:${this.mouseY - i}px; left:${this.mouseX + 47}px; ">.</span>`;
+          this.bullets += `<span id=${i} style="font-size:25px; display:inline-block; color:white; position:absolute; top:${y - i}px; left:${x + 47}px; ">.</span>`;
+          if((y-i) < 50)
+            this.bullets = '';
         },i);
-        if((this.mouseY - i) <= 0) break;
       }
       
       this.score = this.score == undefined? this.score=1: this.score+=1;

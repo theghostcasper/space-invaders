@@ -1,207 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Space invaders</title>
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <head>
+    <title>Space invaders</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <section id="app" >
+      <header>
+        <nav>
+          <ul class="nav-list">
+            <li><a href="#">Exit</a></li>
+            <li><a href="#">Play</a></li>
+            <li><a href="#">Contact</a></li>
+            <li class="nav-list_last"><a href="#">Score =  {{ score || 0 }}</a></li>
+          </ul>
+        </nav>
+      </header>
+      <section  class="game-wrapper">
+        <section class="gameSection"  @keyup="shoot" @click="shoot" @touchstart="shoot" @touchmove="onMouseMoved"  @mousemove="onMouseMoved"> <!--  --> 
+          <article class="player" v-if="playNow">
+            <img class="play-now_spacer"  v-bind:style="{top: mouseY + 'px', left: mouseX + 'px'}"  src="spacer.png">
+            <audio class="gun-shot" autoplay>
+              <source src="gun.m4a">
+            </audio>
+          </article>
 
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing: border-box;  
-      cursor: none;    
-    }
-    html,#app{
-      width:100%;
-      height: 100%;
-      cursor: none;
-    }
-    body{
-      width:calc(100% - 100px);
-      height: calc(100% - 100px);
-      background-color: black;
-      background-size: cover;
-      background-position: center;
-    }
-    .nav-list{
-      display: flex;
-      flex-wrap: wrap;
-      align-content: space-around;
-      justify-content: center;
-    }
-    .nav-list li{
-      list-style: none;
-      margin: 20px;
-      font-size: 25px;
-    }
-    .nav-list li a{
-      text-decoration: none;
-      color:#F9FAF7;
-      padding:10px 20px;      
-    }
-    .nav-list li a:hover{
-      background-color:orange;
-    }
-    .nav-list li:nth-child(2) a{
-      background-color:orange;
-    }
-    .nav-list li:nth-child(2) a:hover{
-      background-color:grey;
-    }
-    .player{
-      text-align:center;
-    }
-    .play-now_spacer{
-      width:100px;
-      position: fixed;
-      bottom:100px;
-    }
-    .gameSection{
-      height: 100%;
-      width:100%;
-    }
-    .game-wrapper{
-      height: 100%;
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <section id="app" >
-    <header>
-      <nav>
-        <ul class="nav-list">
-          <li><a href="#">Exit</a></li>
-          <li><a href="#">Play</a></li>
-          <li><a href="#">Contact</a></li>
-          <li class="nav-list_last"><a href="#">Score =  {{ score || 0 }}</a></li>
-        </ul>
-      </nav>
-    </header>
-    <section  class="game-wrapper">
-      <section class="gameSection"  @keyup="shoot" @click="shoot"  @mousemove="onMouseMoved"> <!-- @touchstart="shoot" @touchmove="onMouseMoved" --> 
-        <article class="player" v-if="playNow">
-          <img class="play-now_spacer"  v-bind:style="{top: mouseY + 'px', left: mouseX + 'px'}"  src="spacer.png">
-          <audio class="gun-shot" autoplay>
-            <source src="gun.m4a">
-          </audio>
-        </article>
-
-        <section v-html="whiteDots"></section>
-        <section class="bullets" v-html="bullets"></section>
+          <section v-html="whiteDots"></section>
+          <section class="bullets" v-html="bullets"></section>
+        </section>
       </section>
     </section>
-  </section>
 
 
-
-  <script>
-    let app = new Vue({
-      el: '#app',
-      data:{
-        whiteDots: this.whiteDots,
-        playNow: this.playNow,
-        mouseX: this.mouseX || 600,
-        mouseY: this.mouseY || 400,
-        score: this.score,
-        bullets: '',
-        allBullets: []
-      },
-      methods:{
-        onMouseMoved,
-        shoot
-      },
-      mounted: function(){
-        this.$nextTick(() => this.randomSpaceDots());
-        window.addEventListener('keydown', (e) => {
-          if(e.keyCode == 39){
-            if(typeof right != "undefined")
-              clearInterval(right) 
-            right = setInterval(() =>  { this.mouseX += 10 }, 10);
-          }
-          if(e.keyCode == 37){
-            if(typeof left != "undefined")
-
-            clearInterval(left)           
-            left = setInterval(() =>  { this.mouseX -= 10 },10); 
-          }
-          if(e.keyCode == 40){
-            if(typeof down != "undefined")
-
-            clearInterval(down)           
-
-            down = setInterval(() => { this.mouseY +=10 },10); 
-          }
-          if(e.keyCode == 38){
-            if(typeof up != "undefined")
-
-            clearInterval(up)           
-
-            up = setInterval(() =>  { this.mouseY -=10 },10); 
-          }
-          if(e.keyCode == 32){
-            if(typeof boom != "undefined")
-
-            clearInterval(boom)           
-
-            boom = setInterval(() => { this.shoot() },80);  
-          }
-        });
-        window.addEventListener('keyup', (e) => {
-          if(e.keyCode == 39) 
-            clearInterval(right)           
-          if(e.keyCode == 37)
-            clearInterval(left)           
-          if(e.keyCode == 40)
-            clearInterval(down)           
-          if(e.keyCode == 38)
-            clearInterval(up)           
-          if(e.keyCode == 32)
-            clearInterval(boom)           
-        });
-      }
-    });
-    app.randomSpaceDots = function randomDots(){
-        let width = window.innerWidth; //get window width
-        let height = window.innerHeight; //get window height
-
-        this.whiteDots = '';
-        for(let i=0;i<200;i++){
-          setTimeout(()=>{
-            let randomWidth = Math.floor(Math.random()*width); //getting a random value less than the width of the screen.
-            let randomHeight = Math.floor(Math.random()*height); // getting a random value less than the height of the screen, excluding the header.
-            let randomFont = Math.floor(Math.random()*40);
-
-            this.whiteDots += `<span style="font-size:${randomFont}px; z-index:-${randomWidth}; display:inline-block; color:white; position:absolute; bottom:${randomHeight}px; right:${randomWidth}px; ">.</span>`;
-            if(i == 20){
-              this.playNow = true;
-            }
-          },i*10);
-        }
-        
-        
-    }
-    function onMouseMoved(e){
-      this.mouseX = e.clientX;
-      this.mouseY = e.clientY;
-    }  
-    function shoot(e){
-      let x = this.mouseX;
-      let y = this.mouseY;
-      for(let i = 0;i<=y;i+=50){
-          document.querySelector('.gun-shot').currentTime = 0;
-          document.querySelector('.gun-shot').play()
-        setTimeout(()=>{
-          if(y-i < 50){
-            this.bullets = ''
-          }
-          this.bullets =  `<span id=${i} style="font-size:50px; display:inline-block; color:white; position:absolute; top:${y - 100- i}px; left:${x +47}px; ">..</span>`;
-
-        },i);
-      }
-      this.score = this.score == undefined? this.score=1: this.score+=1;
-    }
-  </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

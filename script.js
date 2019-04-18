@@ -15,6 +15,9 @@
       },
       mounted: function(){
         this.$nextTick(() => this.randomSpaceDots());
+        window.addEventListener('touchmove', ()=>{
+          this.onMouseMoved();
+        })
         window.addEventListener('keydown', (e) => {
           if(e.keyCode == 39){
             if(typeof right != "undefined")

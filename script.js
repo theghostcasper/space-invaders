@@ -11,12 +11,13 @@
       },
       methods:{
         onMouseMoved,
+        onTouchMove,
         shoot
       },
       mounted: function(){
         this.$nextTick(() => this.randomSpaceDots());
-        window.addEventListener('touchmove', ()=>{
-          this.onMouseMoved();
+        window.addEventListener('touchmove', (e)=>{
+          this.onTouchMove(e);
         })
         window.addEventListener('keydown', (e) => {
           if(e.keyCode == 39){
@@ -87,9 +88,13 @@
         
     }
     function onMouseMoved(e){
-      this.mouseX = e.clientX;
-      this.mouseY = e.clientY;
-    }  
+      this.mouseX =  e.clientX ;
+      this.mouseY =  e.clientY ;
+    } 
+    function onTouchMove(e){
+      this.mouseX = e.touches[0].clientX;
+      this.mouseY = e.touches[0].clientY;
+    } 
     function shoot(e){
       let x = this.mouseX;
       let y = this.mouseY;
